@@ -41,15 +41,15 @@ var logs = null;
 var app = express();
 
 //Shikha - dashdb connection
-var ibmdb = require('ibm_db');
+//var ibmdb = require('ibm_db');
 /*var dashDBCredentials = vcapServices.getCredentials( 'dashDB' );
 var dashDBConnString = null;
 if ( dashDBCredentials ) {
   dashDBConnString = dashDBCredentials.dsn;
   console.log("DashDB Connection String:" ,dashDBConnString );
 }*/
-var dashDBConnString = "DATABASE=BLUDB;HOSTNAME=awh-yp-small02.services.dal.bluemix.net;PORT=50000;PROTOCOL=TCPIP;UID=dash100349;PWD=I7d3aixY5oOW;";
-console.log("DashDB Connection String:" ,dashDBConnString );
+//var dashDBConnString = "DATABASE=BLUDB;HOSTNAME=awh-yp-small02.services.dal.bluemix.net;PORT=50000;PROTOCOL=TCPIP;UID=dash100349;PWD=I7d3aixY5oOW;";
+//console.log("DashDB Connection String:" ,dashDBConnString );
 
 // Bootstrap application settings
 app.use( express.static( './public' ) ); // load UI from public folder
@@ -66,29 +66,29 @@ var conversation = new Watson( {
   version: 'v1'
 } );
 
-//to get data from DB - older function ...need to modify for this app
-app.post('/api/message/select', function(req, res){
-	var origin = req.body.from;  //var origin = req.query.o; //"A";
-	var destination = req.body.to; //var destination = req.query.d; //"B";"wheat"; //
-	var commodity = req.body.commodity; //"wheat"; //req.query.c; //"wheat";
-	//var query = "SELECT * from TABLE1 WHERE DESTINATION='B' AND ORIGIN='A' AND COMMODITY='wheat'";
-	//var query = "SELECT * from TABLE1 WHERE DESTINATION='"+destination+"' AND ORIGIN='"+origin+"' AND COMMODITY='"+commodity+"'";
-	var query = "SELECT RATE from TABLE1 WHERE DESTINATION='"+destination+"' AND ORIGIN='"+origin+"' AND COMMODITY='"+commodity+"'";
-	console.log(query);
-	ibmdb.open(dashDBConnString, function(err, conn){
-		if(!err){
-			//var query1 = "INSERT INTO TESTDATA (COL1, COL2) VALUES (3, 'PQR')";
-			//conn.query(query1);
-			//var query = "SELECT * from TESTDATA";
-			conn.query(query, function(err, rows){
-				if(!err){
-					res.json(rows);
-					conn.close();
-				}
-			})
-		}
-	})
-});
+////to get data from DB - older function ...need to modify for this app
+//app.post('/api/message/select', function(req, res){
+//	var origin = req.body.from;  //var origin = req.query.o; //"A";
+//	var destination = req.body.to; //var destination = req.query.d; //"B";"wheat"; //
+//	var commodity = req.body.commodity; //"wheat"; //req.query.c; //"wheat";
+//	//var query = "SELECT * from TABLE1 WHERE DESTINATION='B' AND ORIGIN='A' AND COMMODITY='wheat'";
+//	//var query = "SELECT * from TABLE1 WHERE DESTINATION='"+destination+"' AND ORIGIN='"+origin+"' AND COMMODITY='"+commodity+"'";
+//	var query = "SELECT RATE from TABLE1 WHERE DESTINATION='"+destination+"' AND ORIGIN='"+origin+"' AND COMMODITY='"+commodity+"'";
+//	console.log(query);
+//	ibmdb.open(dashDBConnString, function(err, conn){
+//		if(!err){
+//			//var query1 = "INSERT INTO TESTDATA (COL1, COL2) VALUES (3, 'PQR')";
+//			//conn.query(query1);
+//			//var query = "SELECT * from TESTDATA";
+//			conn.query(query, function(err, rows){
+//				if(!err){
+//					res.json(rows);
+//					conn.close();
+//				}
+//			})
+//		}
+//	})
+//});
 
 // Endpoint to be call from the client side
 app.post( '/api/message', function(req, res) {
