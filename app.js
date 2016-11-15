@@ -26,6 +26,7 @@ var Watson = require( 'watson-developer-cloud/conversation/v1' );  // watson sdk
 var uuid = require( 'uuid' );
 var vcapServices = require( 'vcap_services' );
 var basicAuth = require( 'basic-auth-connect' );
+var ibmdb = require('ibm_db');
 
 // The app owner may optionally configure a cloudand db to track user input.
 // This cloudand db is not required, the app will operate without it.
