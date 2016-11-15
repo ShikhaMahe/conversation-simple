@@ -42,13 +42,12 @@ var logs = null;
 var app = express();
 
 //Shikha - dashdb connection
-//var ibmdb = require('ibm_db');
-/*var dashDBCredentials = vcapServices.getCredentials( 'dashDB' );
+var dashDBCredentials = vcapServices.getCredentials( 'dashDB' );
 var dashDBConnString = null;
 if ( dashDBCredentials ) {
   dashDBConnString = dashDBCredentials.dsn;
   console.log("DashDB Connection String:" ,dashDBConnString );
-}*/
+}
 //var dashDBConnString = "DATABASE=BLUDB;HOSTNAME=awh-yp-small02.services.dal.bluemix.net;PORT=50000;PROTOCOL=TCPIP;UID=dash100349;PWD=I7d3aixY5oOW;";
 //console.log("DashDB Connection String:" ,dashDBConnString );
 
