@@ -66,29 +66,57 @@ var conversation = new Watson( {
   version: 'v1'
 } );
 
-////to get data from DB - older function ...need to modify for this app
-//app.post('/api/message/select', function(req, res){
-//	var origin = req.body.from;  //var origin = req.query.o; //"A";
-//	var destination = req.body.to; //var destination = req.query.d; //"B";"wheat"; //
-//	var commodity = req.body.commodity; //"wheat"; //req.query.c; //"wheat";
-//	//var query = "SELECT * from TABLE1 WHERE DESTINATION='B' AND ORIGIN='A' AND COMMODITY='wheat'";
-//	//var query = "SELECT * from TABLE1 WHERE DESTINATION='"+destination+"' AND ORIGIN='"+origin+"' AND COMMODITY='"+commodity+"'";
-//	var query = "SELECT RATE from TABLE1 WHERE DESTINATION='"+destination+"' AND ORIGIN='"+origin+"' AND COMMODITY='"+commodity+"'";
-//	console.log(query);
-//	ibmdb.open(dashDBConnString, function(err, conn){
-//		if(!err){
-//			//var query1 = "INSERT INTO TESTDATA (COL1, COL2) VALUES (3, 'PQR')";
-//			//conn.query(query1);
-//			//var query = "SELECT * from TESTDATA";
-//			conn.query(query, function(err, rows){
-//				if(!err){
-//					res.json(rows);
-//					conn.close();
-//				}
-//			})
-//		}
-//	})
-//});
+//to get data from DB - account balance
+app.post('/api/message/getBalance', function(req, res){
+	var accountNum = req.body.accountNum;  //var origin = req.query.o; //"A";
+	//var destination = req.body.to; //var destination = req.query.d; //"B";"wheat"; //
+	//var commodity = req.body.commodity; //"wheat"; //req.query.c; //"wheat";
+	//var query = "SELECT * from TABLE1 WHERE DESTINATION='B' AND ORIGIN='A' AND COMMODITY='wheat'";
+	//var query = "SELECT * from TABLE1 WHERE DESTINATION='"+destination+"' AND ORIGIN='"+origin+"' AND COMMODITY='"+commodity+"'";
+	var query = "SELECT BALANCE from BALANCE WHERE ACCOUNT_NUM="+accountNum;
+	console.log(query);
+	ibmdb.open(dashDBConnString, function(err, conn){
+		if(!err){
+			//var query1 = "INSERT INTO TESTDATA (COL1, COL2) VALUES (3, 'PQR')";
+			//conn.query(query1);
+			//var query = "SELECT * from TESTDATA";
+			conn.query(query, function(err1, rows){
+				if(!err1){
+					console.log("DB Output (rows): "+rows);
+					res.json(rows);
+					conn.close();
+				} else {
+					console.log("DB query error: "+err1);
+				}
+			})
+		} else {
+			console.log("Connection Error: "+err);
+		}
+	})
+});
+
+//to get data from DB - transaction details
+app.post('/api/message/getTransactionDetails', function(req, res){
+	var accountNum = req.body.accountNum;  //var origin = req.query.o; //"A";
+	var query = "SELECT * from TRANSACTIONS WHERE ACCOUNT_NUM="+accountNum;
+	console.log(query);
+	ibmdb.open(dashDBConnString, function(err, conn){
+		if(!err){
+			conn.query(query, function(err1, rows){
+				if(!err1){
+					console.log("DB Output (rows): "+rows);
+					res.json(rows);
+					conn.close();
+				} else {
+					console.log("DB query error: "+err1);
+				}
+			})
+		} else {
+			console.log("Connection Error: "+err);
+		}
+	})
+});
+
 
 // Endpoint to be call from the client side
 app.post( '/api/message', function(req, res) {

@@ -114,6 +114,76 @@ var ConversationPanel = (function() {
 
   // Display a user or Watson message that has just been sent/received
   function displayMessage(newPayload, typeValue) {
+  	
+  	if(newPayload['context'] && newPayload.context.getBalance == 'true') {
+  		var account_num = 100;
+  		alert("in balance enquiry..");
+  		Api.sendDBRequest(account_num, '/api/message/getBalance', function(response, err){
+  			alert(response);
+  			var res = JSON.parse(response);
+  			alert(res);
+  			var length = newPayload.output.text.length;
+  			newPayload.output.text[length] = "Your account balance is "+res[0].BALANCE;
+  		    var isUser = isUserMessage(typeValue);
+    		var textExists = (newPayload.input && newPayload.input.text)
+     	 	|| (newPayload.output && newPayload.output.text);
+    		if (isUser !== null && textExists) {
+     		 // Create new message DOM element
+     			var messageDivs = buildMessageDomElements(newPayload, isUser);
+      			var chatBoxElement = document.querySelector(settings.selectors.chatBox);
+      			var previousLatest = chatBoxElement.querySelectorAll((isUser
+              	? settings.selectors.fromUser : settings.selectors.fromWatson)
+              	+ settings.selectors.latest);
+      		// Previous "latest" message is no longer the most recent
+      		if (previousLatest) {
+        		Common.listForEach(previousLatest, function(element) {
+          		element.classList.remove('latest');
+        	});
+      	}
+      messageDivs.forEach(function(currentDiv) {
+        chatBoxElement.appendChild(currentDiv);
+        // Class to start fade in animation
+        currentDiv.classList.add('load');
+      });
+      // Move chat to the most recent messages when new messages are added
+      scrollToChatBottom();
+  	}});
+  	}
+  	else if(newPayload['context'] && newPayload.context.getTransactionDetails == 'true') {
+  		var account_num = 100;
+  		alert("get transaction details..");
+  		Api.sendDBRequest(account_num, '/api/message/getTransactionDetails', function(response, err){
+  			alert(response);
+  			var res = JSON.parse(response);
+  			alert(res);
+  			var length = newPayload.output.text.length;
+  			newPayload.output.text[length] = "Your transaction details are: "+response;
+  		    var isUser = isUserMessage(typeValue);
+    		var textExists = (newPayload.input && newPayload.input.text)
+     	 	|| (newPayload.output && newPayload.output.text);
+    		if (isUser !== null && textExists) {
+     		 // Create new message DOM element
+     			var messageDivs = buildMessageDomElements(newPayload, isUser);
+      			var chatBoxElement = document.querySelector(settings.selectors.chatBox);
+      			var previousLatest = chatBoxElement.querySelectorAll((isUser
+              	? settings.selectors.fromUser : settings.selectors.fromWatson)
+              	+ settings.selectors.latest);
+      		// Previous "latest" message is no longer the most recent
+      		if (previousLatest) {
+        		Common.listForEach(previousLatest, function(element) {
+          		element.classList.remove('latest');
+        	});
+      	}
+      messageDivs.forEach(function(currentDiv) {
+        chatBoxElement.appendChild(currentDiv);
+        // Class to start fade in animation
+        currentDiv.classList.add('load');
+      });
+      // Move chat to the most recent messages when new messages are added
+      scrollToChatBottom();
+  	}});
+  	}
+  	else {
     var isUser = isUserMessage(typeValue);
     var textExists = (newPayload.input && newPayload.input.text)
       || (newPayload.output && newPayload.output.text);
@@ -130,7 +200,6 @@ var ConversationPanel = (function() {
           element.classList.remove('latest');
         });
       }
-
       messageDivs.forEach(function(currentDiv) {
         chatBoxElement.appendChild(currentDiv);
         // Class to start fade in animation
@@ -138,7 +207,7 @@ var ConversationPanel = (function() {
       });
       // Move chat to the most recent messages when new messages are added
       scrollToChatBottom();
-    }
+    }}
   }
 
   // Checks if the given typeValue matches with the user "name", the Watson "name", or neither
