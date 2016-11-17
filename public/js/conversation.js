@@ -116,14 +116,39 @@ var ConversationPanel = (function() {
   function displayMessage(newPayload, typeValue) {
   	
   	if(newPayload['context'] && newPayload.context.getBalance == 'true') {
+  		var isUser = isUserMessage(typeValue);
+    		var textExists = (newPayload.input && newPayload.input.text)
+     	 	|| (newPayload.output && newPayload.output.text);
+    		if (isUser !== null && textExists) {
+     		 // Create new message DOM element
+     			var messageDivs = buildMessageDomElements(newPayload, isUser);
+      			var chatBoxElement = document.querySelector(settings.selectors.chatBox);
+      			var previousLatest = chatBoxElement.querySelectorAll((isUser
+              	? settings.selectors.fromUser : settings.selectors.fromWatson)
+              	+ settings.selectors.latest);
+      		// Previous "latest" message is no longer the most recent
+      		if (previousLatest) {
+        		Common.listForEach(previousLatest, function(element) {
+          		element.classList.remove('latest');
+        	});
+      	}
+      messageDivs.forEach(function(currentDiv) {
+        chatBoxElement.appendChild(currentDiv);
+        // Class to start fade in animation
+        currentDiv.classList.add('load');
+      });
+      // Move chat to the most recent messages when new messages are added
+      scrollToChatBottom();
+  	}
   		var account_num = 100;
-  		alert("in balance enquiry..");
+  		//alert("in balance enquiry..");
   		Api.sendDBRequest(account_num, '/api/message/getBalance', function(response, err){
-  			alert(response);
+  			//alert(response);
   			var res = JSON.parse(response);
-  			alert(res);
+  			//alert(res);
   			var length = newPayload.output.text.length;
-  			newPayload.output.text[length] = "Your account balance is "+res[0].BALANCE;
+  			newPayload.output.text[0] = "Your account balance is "+res[0].BALANCE;
+  			newPayload.context.getBalance == "false";
   		    var isUser = isUserMessage(typeValue);
     		var textExists = (newPayload.input && newPayload.input.text)
      	 	|| (newPayload.output && newPayload.output.text);
@@ -150,14 +175,38 @@ var ConversationPanel = (function() {
   	}});
   	}
   	else if(newPayload['context'] && newPayload.context.getTransactionDetails == 'true') {
+  		var isUser = isUserMessage(typeValue);
+    		var textExists = (newPayload.input && newPayload.input.text)
+     	 	|| (newPayload.output && newPayload.output.text);
+    		if (isUser !== null && textExists) {
+     		 // Create new message DOM element
+     			var messageDivs = buildMessageDomElements(newPayload, isUser);
+      			var chatBoxElement = document.querySelector(settings.selectors.chatBox);
+      			var previousLatest = chatBoxElement.querySelectorAll((isUser
+              	? settings.selectors.fromUser : settings.selectors.fromWatson)
+              	+ settings.selectors.latest);
+      		// Previous "latest" message is no longer the most recent
+      		if (previousLatest) {
+        		Common.listForEach(previousLatest, function(element) {
+          		element.classList.remove('latest');
+        	});
+      	}
+      	messageDivs.forEach(function(currentDiv) {
+        chatBoxElement.appendChild(currentDiv);
+        // Class to start fade in animation
+        currentDiv.classList.add('load');
+      });
+      // Move chat to the most recent messages when new messages are added
+      scrollToChatBottom();
+  	}
   		var account_num = 100;
-  		alert("get transaction details..");
+  		//alert("get transaction details..");
   		Api.sendDBRequest(account_num, '/api/message/getTransactionDetails', function(response, err){
-  			alert(response);
+  			//alert(response);
   			var res = JSON.parse(response);
-  			alert(res);
+  			//alert(res);
   			var length = newPayload.output.text.length;
-  			newPayload.output.text[length] = "Your transaction details are: "+response;
+  			newPayload.output.text[0] = "Your transaction details are: "+response;
   		    var isUser = isUserMessage(typeValue);
     		var textExists = (newPayload.input && newPayload.input.text)
      	 	|| (newPayload.output && newPayload.output.text);

@@ -64,7 +64,7 @@ var conversation = new Watson( {
   url: 'https://gateway.watsonplatform.net/conversation/api',
   version_date: '2016-09-20',
   version: 'v1'
-} );
+});
 
 //to get data from DB - account balance
 app.post('/api/message/getBalance', function(req, res){
@@ -98,7 +98,7 @@ app.post('/api/message/getBalance', function(req, res){
 //to get data from DB - transaction details
 app.post('/api/message/getTransactionDetails', function(req, res){
 	var accountNum = req.body.accountNum;  //var origin = req.query.o; //"A";
-	var query = "SELECT * from TRANSACTIONS WHERE ACCOUNT_NUM="+accountNum;
+	var query = "SELECT * from TRANSACTIONS_TABLE WHERE ACCOUNTID="+accountNum;
 	console.log(query);
 	ibmdb.open(dashDBConnString, function(err, conn){
 		if(!err){
@@ -152,7 +152,7 @@ app.post( '/api/message', function(req, res) {
     }
     return res.json( updateMessage( payload, data ) );
   } );
-} );
+});
 
 /**
  * Updates the response text using the intent confidence
