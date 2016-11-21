@@ -100,12 +100,16 @@ app.post('/api/message/getTransactionDetails', function(req, res){
 	var accountNum = req.body.accountNum;  //var origin = req.query.o; //"A";
 	var query = "SELECT * from TRANSACTIONS_TABLE WHERE ACCOUNTID="+accountNum;
 	console.log(query);
+	var jsonObj = {};
+	jsonObj.itemList = [];
 	ibmdb.open(dashDBConnString, function(err, conn){
 		if(!err){
 			conn.query(query, function(err1, rows){
 				if(!err1){
 					console.log("DB Output (rows): "+rows);
-					res.json(rows);
+					jsonObj.itemList = rows;
+					console.log("DB Output (jsonObj): "+jsonObj);
+					res.json(jsonObj);
 					conn.close();
 				} else {
 					console.log("DB query error: "+err1);
@@ -117,6 +121,30 @@ app.post('/api/message/getTransactionDetails', function(req, res){
 	})
 });
 
+//to get data from DB - offer details
+app.post('/api/message/getOfferDetails', function(req, res){
+	var query = "SELECT * from OFFERS";
+	console.log(query);
+	var jsonObj = {};
+	jsonObj.itemList = [];
+	ibmdb.open(dashDBConnString, function(err, conn){
+		if(!err){
+			conn.query(query, function(err1, rows){
+				if(!err1){
+					//console.log("DB Output (rows): "+rows);
+					jsonObj.itemList = rows;
+					console.log("DB Output (jsonObj): "+jsonObj);
+					res.json(jsonObj);
+					conn.close();
+				} else {
+					console.log("DB query error: "+err1);
+				}
+			})
+		} else {
+			console.log("Connection Error: "+err);
+		}
+	})
+});
 
 // Endpoint to be call from the client side
 app.post( '/api/message', function(req, res) {

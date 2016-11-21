@@ -202,11 +202,84 @@ var ConversationPanel = (function() {
   		var account_num = 100;
   		//alert("get transaction details..");
   		Api.sendDBRequest(account_num, '/api/message/getTransactionDetails', function(response, err){
+  			var header = "ID &nbsp &nbsp &nbsp Amount &nbsp &nbsp Date &nbsp &nbsp &nbsp Transaction Detail";
+  			newPayload.output.text[0] = "Your transaction details are: ";
+  			var length = newPayload.output.text.length;
+  			//newPayload.output.text[0] = "Your transaction details are: "+response;
+  			newPayload.output.text[length] = header;
   			//alert(response);
   			var res = JSON.parse(response);
   			//alert(res);
-  			var length = newPayload.output.text.length;
-  			newPayload.output.text[0] = "Your transaction details are: "+response;
+  			var jsonLength = res.itemList.length;
+  			for (var j=0; j<jsonLength; j++) {
+  				//var str = "TranID:" + res.itemList[j].TRANID + " TranDetail:" + res.itemList[j].TRANDETAIL +"_" + res.itemList[j].TRANTYPE + " Amount:" + res.itemList[j].AMOUNT + " Date:"+res.itemList[j].DATE;
+  				var str = res.itemList[j].TRANID + "&nbsp &nbsp &nbsp &nbsp" + res.itemList[j].AMOUNT + "&nbsp &nbsp &nbsp &nbsp"+res.itemList[j].DATE.substr(0,10) + "&nbsp &nbsp" + res.itemList[j].TRANDETAIL +"_" + res.itemList[j].TRANTYPE ; 
+  	  			length = newPayload.output.text.length;
+  			//newPayload.output.text[0] = "Your transaction details are: "+response;
+  			newPayload.output.text[length] = str;
+  			}
+  		    var isUser = isUserMessage(typeValue);
+    		var textExists = (newPayload.input && newPayload.input.text)
+     	 	|| (newPayload.output && newPayload.output.text);
+    		if (isUser !== null && textExists) {
+     		 // Create new message DOM element
+     			var messageDivs = buildMessageDomElements(newPayload, isUser);
+      			var chatBoxElement = document.querySelector(settings.selectors.chatBox);
+      			var previousLatest = chatBoxElement.querySelectorAll((isUser
+              	? settings.selectors.fromUser : settings.selectors.fromWatson)
+              	+ settings.selectors.latest);
+      		// Previous "latest" message is no longer the most recent
+      		if (previousLatest) {
+        		Common.listForEach(previousLatest, function(element) {
+          		element.classList.remove('latest');
+        	});
+      	}
+      messageDivs.forEach(function(currentDiv) {
+        chatBoxElement.appendChild(currentDiv);
+        // Class to start fade in animation
+        currentDiv.classList.add('load');
+      });
+      // Move chat to the most recent messages when new messages are added
+      scrollToChatBottom();
+  	}});
+  	}
+  	else if(newPayload['context'] && newPayload.context.getOfferDetails == 'true') {
+  		var isUser = isUserMessage(typeValue);
+    		var textExists = (newPayload.input && newPayload.input.text)
+     	 	|| (newPayload.output && newPayload.output.text);
+    		if (isUser !== null && textExists) {
+     		 // Create new message DOM element
+     			var messageDivs = buildMessageDomElements(newPayload, isUser);
+      			var chatBoxElement = document.querySelector(settings.selectors.chatBox);
+      			var previousLatest = chatBoxElement.querySelectorAll((isUser
+              	? settings.selectors.fromUser : settings.selectors.fromWatson)
+              	+ settings.selectors.latest);
+      		// Previous "latest" message is no longer the most recent
+      		if (previousLatest) {
+        		Common.listForEach(previousLatest, function(element) {
+          		element.classList.remove('latest');
+        	});
+      	}
+      	messageDivs.forEach(function(currentDiv) {
+        chatBoxElement.appendChild(currentDiv);
+        // Class to start fade in animation
+        currentDiv.classList.add('load');
+      });
+      // Move chat to the most recent messages when new messages are added
+      scrollToChatBottom();
+  	}
+  		
+  		Api.sendDBRequest(account_num, '/api/message/getOfferDetails', function(response, err){
+  			newPayload.output.text[0] = "Offers are: ";
+  			//alert(response);
+  			var res = JSON.parse(response);
+  			var jsonLength = res.itemList.length;
+  			for (var j=0; j<jsonLength; j++) {
+  				var count = j + 1;
+  				var str = count + ". " + res.itemList[j].Description;
+  	  			length = newPayload.output.text.length;
+  				newPayload.output.text[length] = str;
+  			}
   		    var isUser = isUserMessage(typeValue);
     		var textExists = (newPayload.input && newPayload.input.text)
      	 	|| (newPayload.output && newPayload.output.text);
