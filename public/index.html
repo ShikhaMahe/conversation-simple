@@ -1,44 +1,85 @@
 <html>
-<head>
-  <base href="/">
-  <title>Conversation Chat App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta property="og:image" content="conversation.svg" />
-  <meta property="og:title" content="Conversation Chat Simple" />
-  <meta property="og:description" content="Sample application that shows how to use the Conversation API to identify user intents" />
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="css/app.css">
-</head>
-<body>
-  <div id="view-change-button" class="button" onclick="PayloadPanel.togglePanel(event, this)">
-    <img class="option full" src="../img/Chat Button.png">
-    <img class="option not-full" src="../img/Code Button.png">
-  </div>
-  <div id="contentParent" class="responsive-columns-wrapper">
-    <div id="chat-column-holder" class="responsive-column content-column">
-      <div class="chat-column">
-        <div id="scrollingChat"></div>
-        <label for="textInput" class="inputOutline">
-          <input id="textInput" class="input responsive-column"
-            placeholder="Type something" type="text"
-            onkeydown="ConversationPanel.inputKeyDown(event, this)">
-        </label>
-      </div>
-    </div>
-    <div id="payload-column" class="fixed-column content-column">
-      <div id="payload-initial-message">
-        Type something to see the output
-      </div>
-      <div id="payload-request" class="payload"></div>
-      <div id="payload-response" class="payload"></div>
-    </div>
-  </div>
 
-  <script src="js/common.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/conversation.js"></script>
-  <script src="js/payload.js"></script>
-  <script src="js/global.js"></script>
+<head>
+    <title>Cognitive Bank</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+
+
+    <!-- Core  -->
+    <!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+-->
+
+
+</head>
+
+<body class="homePage">
+
+    <div class="container">
+        <div class="outline">
+            <!--<header>
+                <div class="banner">
+                    <div class="titleArea">
+
+                        <div class="logo"><img class="logoImage" src="images/wash/cloud.svg"></div>
+                        <div class="name"><a class="home" href=".">Cloud Insurance Co.</a></div>
+
+                    </div>
+                    <div class="loginArea">
+                        <div class="menu"><a class="menulink" href="./about">About</a></div>
+                        <div class="menu">
+                            <a class="menulink" onclick="showMenu()">Log In</a>
+                        </div>
+                        <div id="status "></div>
+                    </div>
+                    <a href = "https://github.com/IBM-Bluemix/cloudco-insurance"><img height="25px" src = "images/github.svg"/></a>
+                </div>
+            </header>-->
+            <section class="layout ">
+                <div class="dropmenu" id="loginmenu">
+                    <div class="loginbox">
+                        <div class="loginform">
+                            <div class="loginfield">
+                                <img src="img/username.svg" class="icon">
+                                <input id="email" class="logininput" type="text" name="email" placeholder="E-mail address" onkeypress="return newEvent(event,'login')">
+                            </div>
+                            <div class="loginfield">
+                                <img src="img/password.svg" class="icon">
+                                <input id="password" class="logininput" type="password" name="password" placeholder="Password"  onkeypress="return newEvent(event,'login')">
+                            </div>
+                            <button class="loginbutton" onclick="login()">Log In</button>
+                            </br></br>
+                            <!--<div class="loginnew"><a class="signuplink" href="./signup">Add a new account</a></div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="messagearea" id="messagearea"></div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <section class="layout ">
+            <p>
+            </p>
+            <div class="github ">
+                <span class="octicon octicon-octoface " style="font-size:22px;padding-right:10px; ">
+    </span>
+            </div>
+            <p></p>
+        </section>
+        <!-- layout -->
+    </footer>
+    <!-- footer section -->
+
 </body>
+
+  <script src="js/login.js"></script>
+  <script src="js/api.js"></script>
+
 </html>

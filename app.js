@@ -26,7 +26,13 @@ var Watson = require( 'watson-developer-cloud/conversation/v1' );  // watson sdk
 var uuid = require( 'uuid' );
 var vcapServices = require( 'vcap_services' );
 var basicAuth = require( 'basic-auth-connect' );
+//following is required for dashdb
 var ibmdb = require('ibm_db');
+
+//following is required for authentication
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var session = require('express-session');
 
 // The app owner may optionally configure a cloudand db to track user input.
 // This cloudand db is not required, the app will operate without it.
@@ -55,6 +61,14 @@ if ( dashDBCredentials ) {
 app.use( express.static( './public' ) ); // load UI from public folder
 app.use( bodyParser.json() );
 
+app.use(session({ secret: 'keyboard cat' }));//to ensure that the login session is restored in the correct order
+app.use(passport.initialize()); //to initialize Passport
+app.use(passport.session()); //to use persistent login sessions
+
+//app.set('views', __dirname + '/');
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+
 // Create the service wrapper
 var conversation = new Watson( {
   // If unspecified here, the CONVERSATION_USERNAME and CONVERSATION_PASSWORD env properties will be checked
@@ -66,8 +80,115 @@ var conversation = new Watson( {
   version: 'v1'
 });
 
+//to login
+
+app.post('/api/message/login',
+  passport.authenticate('local', {
+    successRedirect: '/loginSuccess',
+    //successRedirect: '/conversation',
+    failureRedirect: '/loginFailure',
+    failureFlash: true 
+  }
+//  , function(req, res){
+//  	console.log("REQ:" +JSON.stringify(req));
+//  	console.log("RES:" + JSON.stringify(res));
+//  }
+)
+);
+
+app.get('/loginFailure', function(req, res, next) {
+  res.send('Failed to authenticate');
+});
+
+app.get('/loginSuccess', function(req, res, next) {
+  res.send('Successfully authenticated');
+});
+
+//app.get('/conversation', function(req, res, next) {
+//  res.render('./public/conversation.html');
+//});
+
+passport.serializeUser(function(user, done) {
+	console.log("in serialize user:"+JSON.stringify(user));
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+	console.log("in deserialize user:"+JSON.stringify(user));
+  done(null, user);
+});
+
+passport.use(new LocalStrategy({usernameField: 'email',passwordField: 'password'},function(username, password, done) {
+  process.nextTick(function() {
+    // Auth Check Logic
+    var query = "SELECT 	* from LOGIN where USERID='"+ username +"'";
+	console.log(query);
+	ibmdb.open(dashDBConnString, function(err, conn){
+		if(!err){
+			conn.query(query, function(err1, rows){
+				if(!err1){
+					if (!rows) {
+						conn.close();
+						return done(null, false, { message: 'Username is not valid.'});
+					} else {
+					//console.log("DB Output (rows): "+JSON.stringify(rows));
+					//console.log(rows[0].PASSWORD + "...."+ password)
+					if (rows[0].PASSWORD === password) {
+						console.log("password matches");
+						conn.close();
+						return done(null, rows);
+					}}
+				} else {
+					console.log("DB query error: "+err1);
+					return done(null, false, {message: err1});
+				}
+			})
+		} else {
+			console.log("Connection Error: "+err);
+			return done(null, false, {message: err});
+		}
+	})
+  });
+}));
+
+app.post('/api/message/login', function(req, res){
+	var query = "SELECT * from LOGIN where USERID='"+req.body.userId+"'";
+	console.log(query);
+	var jsonObj = {};
+	jsonObj.itemList = [];
+	ibmdb.open(dashDBConnString, function(err, conn){
+		if(!err){
+			conn.query(query, function(err1, rows){
+				if(!err1){
+					//console.log("DB Output (rows): "+rows);
+					jsonObj.itemList = rows;
+					console.log("DB Output (jsonObj): "+jsonObj);
+					res.json(jsonObj);
+					conn.close();
+				} else {
+					console.log("DB query error: "+err1);
+				}
+			})
+		} else {
+			console.log("Connection Error: "+err);
+		}
+	})
+});
+
+function isLoggedIn(req, res, next){
+    console.log("session :" + req.session);
+    console.log("req.user : "+ req.user);
+    if(req.isAuthenticated()){
+    //if(req.user.authenticated){
+    	console.log("request is authenticated");
+        return next();
+    }
+    console.log("request is not authenticated");
+    //res.redirect('/login');
+}
+
 //to get data from DB - account balance
-app.post('/api/message/getBalance', function(req, res){
+app.post('/api/message/getBalance', isLoggedIn,  function(req, res){
 	var accountNum = req.body.accountNum;  //var origin = req.query.o; //"A";
 	//var destination = req.body.to; //var destination = req.query.d; //"B";"wheat"; //
 	//var commodity = req.body.commodity; //"wheat"; //req.query.c; //"wheat";

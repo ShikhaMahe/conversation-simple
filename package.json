@@ -22,6 +22,10 @@
     "nano" : "*",
     "uuid": "2.0.2",
     "ibm_db": "*",
+    "express-session": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "ejs" : "*",
     "vcap_services": "^0.2.0"
   },
   "devDependencies": {

@@ -10,6 +10,7 @@ var Api = (function() {
     sendRequest: sendRequest,
 
 	sendDBRequest: sendDBRequest,
+	sendLoginRequest: sendLoginRequest,
     // The request/response getters/setters are defined here to prevent internal methods
     // from calling the methods without any of the callbacks that are added elsewhere.
     getRequestPayload: function() {
@@ -89,6 +90,40 @@ var Api = (function() {
     // Stored in variable (publicly visible through Api.getRequestPayload)
     // to be used throughout the application
     if (Object.getOwnPropertyNames(payloadToWatson).length !== 0) {
+      Api.setRequestPayload(params);
+    }
+
+    // Send request
+    http.send(params);
+  }
+  
+    // Send a DB request to the server
+  function sendLoginRequest(userID, password, url, callback) {
+    // Build request payload
+    var params = {};
+    params.email = userID;
+    params.password = password;
+
+//    if (context) {
+//      payloadToWatson.context = context;
+//    }
+
+    // Built http request
+    var http = new XMLHttpRequest();
+    http.open('POST', url, true);
+    http.setRequestHeader('Content-type', 'application/json');
+    http.onreadystatechange = function() {
+      if (http.readyState === 4 && http.status === 200 && http.responseText) {
+        //Api.setResponsePayload(http.responseText);
+        //alert(http.responseText);
+        callback(http.responseText);
+      }
+    };
+
+    var params = JSON.stringify(params);
+    // Stored in variable (publicly visible through Api.getRequestPayload)
+    // to be used throughout the application
+    if (Object.getOwnPropertyNames(params).length !== 0) {
       Api.setRequestPayload(params);
     }
 
