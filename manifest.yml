@@ -14,4 +14,4 @@ applications:
   - dashDB-ba
   env:
     NPM_CONFIG_PRODUCTION: false,
-    WORKSPACE_ID: 12b99ce7-786d-4a3e-ac68-81aa2938859f 
+    WORKSPACE_ID: 0f22b4a4-f870-47d3-8295-a101aab251b4
